@@ -1,0 +1,27 @@
+{
+  "name": "node-frpc",
+  "version": "1.0.0",
+  "description": "frp client with node!",
+  "main": "./bin/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "frpc": "./bin/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/1021683053/node-frpc.git"
+  },
+  "keywords": [
+    "frp",
+    "frpc",
+    "frps"
+  ],
+  "author": "Liweifeng",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/1021683053/node-frpc/issues"
+  },
+  "homepage": "https://github.com/1021683053/node-frpc#readme"
+}
