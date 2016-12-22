@@ -1,3 +1,3 @@
-# node-frpc
+# Node-frp
 
-### frp for node
+### Run frp in nodejs.
