@@ -1,3 +1,6 @@
+import fs from 'fs';
+import path from 'path';
+
 // 类型判断
 let isArray = Array.isArray;
 let isBuffer = Buffer.isBuffer;
@@ -54,6 +57,48 @@ let defer = () => {
 	return deferred;
 };
 
+// 修改目录权限
+let chmod = (p, mode) => {
+	mode = mode || '0777';
+		if (!fs.existsSync(p)) {
+		return true;
+	}
+	return fs.chmodSync(p, mode);
+};
+
+// 创建目录
+let mkdir = (p, mode) => {
+	mode = mode || '0777';
+	if (fs.existsSync(p)) {
+		chmod(p, mode);
+		return true;
+	}
+	let pp = path.dirname(p);
+	if (fs.existsSync(pp)) {
+		fs.mkdirSync(p, mode);
+	}else{
+		mkdir(pp, mode);
+		mkdir(p, mode);
+	}
+	return true;
+};
+
+// 判断是否是目录
+let isDir = p => {
+	try{
+		return fs.statSync(p).isDirectory();
+	}catch(e){}
+	return false;
+};
+
+// 判断是否存在文件
+let isFile = p => {
+	try{
+		return fs.statSync(p).isFile();
+	}catch(e){}
+	return false;
+};
+
 export default {
 	promisify,
 	defer,
@@ -66,5 +111,9 @@ export default {
 	isObject,
 	isArray,
 	isBuffer,
-	isPromise
+	isPromise,
+	isDir,
+	isFile,
+	chmod,
+	mkdir
 };

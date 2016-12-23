@@ -1,72 +1,61 @@
 import os from 'os';
 import fs from 'fs';
 import path from 'path';
-import util from './util.js';
 import request from 'request';
+import Progress from 'Progress';
+import util from './util.js';
 
-let source_map = {
-	'win32_x86': 'windows_386.zip',
-	'win32_x64': 'windows_amd64.zip',
-	'darwin_386': 'darwin_386.tar.gz',
-	'darwin_x64': 'darwin_amd64.tar.gz',
-	'linux_386': 'linux_386.tar.gz',
-	'linux_amd64': 'linux_amd64.tar.gz',
-	'linux_amd64': 'linux_amd64.tar.gz'
+// 系统对应资源map
+let source = {
+	'win32_x86'		: 	'windows_386.zip',
+	'win32_x64'		: 	'windows_amd64.zip',
+	'darwin_386'	: 	'darwin_386.tar.gz',
+	'darwin_x64'	: 	'darwin_amd64.tar.gz',
+	'linux_386'		: 	'linux_386.tar.gz',
+	'linux_amd64'	: 	'linux_amd64.tar.gz',
+	'linux_amd64'	: 	'linux_amd64.tar.gz'
 };
 
+// 获取系统类型&系统架构
+let platform = `${os.platform()}_${os.arch()}`;
+
+// 下载类
 export default class downloader{
+
 	constructor(){
-		this.os = `${os.platform()}_${os.arch()}`;
-		this.tag = '';
-		this.github = '';
-		this.frp_version = '';
-		this.frp_name = '';
-		this.download_url = '';
+		this.platform = platform;
+		this.version = '';
+		this.name = '';
+		this.download = '';
 	}
 
-	// 执行
-	run(){
-		this.github = this.src(this.tag);
-	}
-
-	// 生成下载地址
-	src(version){
-		let github;
-		if( version ){
-			github = `https://api.github.com/repos/fatedier/frp/releases/tags/v${version}`;
+	/**
+	 * @param  {版本号}
+	 * @return {Promise}
+	 */
+	async use(...args){
+		let [tag] = args;
+		let response;
+		if( !tag ){
+			response = await this.response('https://api.github.com/repos/fatedier/frp/releases/latest');
 		}else{
-			github = `https://api.github.com/repos/fatedier/frp/releases/latest`;
+			response = await this.response(`https://api.github.com/repos/fatedier/frp/releases/tags/${tag}`)
 		}
-		return github;
+		this.setting( response );
+		await this.downloader( this.download, this.name);
 	}
 
-	// 获取api数据
-	async apiResponse(){
-		let defer = util.defer();
-		let options = {
-		    headers: {
-		        'User-Agent': 'node-frp'
-		    }
-		};
-		options.url = this.github;
-		request(options, (error, response, body)=>{
-			let status = response.statusCode;
-			if( error || !body || status == '404' ){
-				defer.reject(false);
-			}else{
-				defer.resolve( JSON.parse( body) );
-			}
-		});
-		return defer.promise;
-	}
-
-	// 获取版本号等信息
-	async version(){
-		let response = await this.apiResponse();
-		let os = this.os;
+	/**
+	 * @param  {数据接口返回数据}
+	 * @return {获取到的版本信息[Object]}
+	 */
+	setting(response){
 		let version = response.tag_name.slice(1);
-		let name = `frp_${version}_${source_map[os]}`;
-		let download = '';
+		let source_name = source[platform];
+		let name = `frp_${version}_${source_name}`;
+		let download;
+
+		// 获取当前下载地址
 		for(let i=0; i<response.assets.length; i++){
 			let asset = response.assets[i];
 			if( asset.name == name ){
@@ -74,29 +63,66 @@ export default class downloader{
 				break;
 			}
 		}
-		this.frp_version = version;
-		this.frp_name = name;
-		this.download_url = download;
-		return {version, os, name, download};
+
+		// 环境赋值
+		this.name = name;
+		this.version = version;
+		this.download = download;
+		return {version, name, download};
 	}
 
-	// 下载地址
-	async download(browser_download_url, name){
-		var dir = path.resolve(__dirname, `../../cache/${name}`);
-		let stream = fs.createWriteStream(dir);
-		let defer = util.defer;
-		request.get( browser_download_url ).pipe(stream);
+	/**
+	 * @param  {Github版本数据接口}
+	 * @return {Promise}
+	 */
+	response( _interface ){
+		let defer = util.defer();
+		let options = {
+		    headers: {
+		        'User-Agent': 'node-frp'
+		    }
+		};
+		options.url = _interface;
+		request(options, (error, response, body)=>{
+			let status = response.statusCode;
+			if( error || !body || status == '404' ){
+				defer.reject(err || body);
+				return;
+			}
+			defer.resolve( JSON.parse( body) );
+		});
 		return defer.promise;
 	}
 
-	// 使用切换
-	async use(...args){
-		let [tag] = args;
-		this.tag = tag;
-		this.run();
-		var version = await this.version(tag);
-		console.log(version);
-		await this.download(version.download, version.name);
+	/**
+	 * 下载所需文件到 cache 文件夹
+	 * @param  {下载地址}
+	 * @param  {文件名称}
+	 * @return {Promise}
+	 */
+	async downloader(download, name){
+		let defer = util.defer();
+		let dir = path.resolve(__dirname, '../../cache/');
+		let fname = `${dir}/${name}`;
+		if( !util.isDir(dir) ){
+			util.mkdir(dir);
+		};
+
+		request( download )
+		.on('response', function(res){
+			let len = parseInt(res.headers['content-length'], 10);
+			let bar = new Progress('downloading [:bar] :percent :etas', {
+				complete: '·',
+				incomplete: ' ',
+				width: 100,
+				total: len
+			});
+			res.on('data', function (chunk) {
+				bar.tick(chunk.length);
+			});
+		})
+		.pipe(fs.createWriteStream(fname));
+		return defer.promise;
 	}
 
 }
