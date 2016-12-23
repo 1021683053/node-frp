@@ -26,10 +26,6 @@ export default class{
 		}else{
 			github = `https://api.github.com/repos/fatedier/frp/releases/latest`;
 		}
-
-		request.get(github, function(err, res){
-			console.log(res.body);
-		});
 	}
 
 	// 获取系统平台
