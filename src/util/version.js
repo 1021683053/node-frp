@@ -1,18 +1,32 @@
 import os from 'os';
 import request from 'request';
 
-let Verison = (...args)=>{
-	let [version] = args;
-	let verison_map = {
-		'win32_x86': 'windows_386.zip',
-		'win32_x64': 'windows_amd64.zip',
-		'darwin_386': 'darwin_386.tar.gz',
-		'darwin_amd64': 'darwin_amd64.tar.gz',
-		'linux_386': 'linux_386.tar.gz',
-		'linux_amd64': 'linux_amd64.tar.gz',
-		'linux_amd64': 'linux_amd64.tar.gz'
-	};
+// 资源对应关系
+let source_map = {
+	'win32_x86': 'windows_386.zip',
+	'win32_x64': 'windows_amd64.zip',
+	'darwin_386': 'darwin_386.tar.gz',
+	'darwin_amd64': 'darwin_amd64.tar.gz',
+	'linux_386': 'linux_386.tar.gz',
+	'linux_amd64': 'linux_amd64.tar.gz',
+	'linux_amd64': 'linux_amd64.tar.gz'
+};
+
+// 下载地址
+
+class version {
+	constructor(...args){
+		let [version] = args;
+	}
 }
+
+
+
+
+// let Verison = (...args)=>{
+// 	let [version] = args;
+
+// };
 
 
 
@@ -63,7 +77,7 @@ let Verison = (...args)=>{
 // 		return new Promise((resolve, reject)=>{
 // 			request.get(src, function(err, res){
 // 				resolve(res);
-// 			})
+// 			});
 // 		});
 // 	}
 // }
