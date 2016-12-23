@@ -24,8 +24,9 @@ let downloader = new Downloader();
 
 (async()=>{
 	try{
-		let download = "http://mirrors.163.com/ubuntu/ls-lR.gz";
-		await downloader.downloader(download, 'ls-lR.gz');
+		await downloader.use('v0.9.0');
+		// let download = "http://mirrors.163.com/ubuntu/ls-lR.gz";
+		// await downloader.downloader(download, 'ls-lR.gz');
 	}catch(err){
 		console.error(err);
 	}

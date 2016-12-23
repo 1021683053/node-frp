@@ -20,7 +20,7 @@ let source = {
 let platform = `${os.platform()}_${os.arch()}`;
 
 // 下载类
-export default class downloader{
+class downloader{
 
 	constructor(){
 		this.platform = platform;
@@ -124,5 +124,6 @@ export default class downloader{
 		.pipe(fs.createWriteStream(fname));
 		return defer.promise;
 	}
-
 }
+
+module.exports = downloader;
