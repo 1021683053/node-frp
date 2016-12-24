@@ -112,9 +112,9 @@ class downloader{
 		.on('response', res=>{
 			let len = parseInt(res.headers['content-length'], 10);
 			let bar = new Progress('downloading [:bar] :percent :etas', {
-				complete: '·',
+				complete: '=',
 				incomplete: ' ',
-				width: 100,
+				width: 40,
 				total: len
 			});
 			res.on('data', chunk=>{
