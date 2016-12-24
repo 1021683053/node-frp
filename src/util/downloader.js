@@ -109,7 +109,7 @@ class downloader{
 		};
 
 		request( download )
-		.on('response', function(res){
+		.on('response', res=>{
 			let len = parseInt(res.headers['content-length'], 10);
 			let bar = new Progress('downloading [:bar] :percent :etas', {
 				complete: '·',
@@ -117,7 +117,7 @@ class downloader{
 				width: 100,
 				total: len
 			});
-			res.on('data', function (chunk) {
+			res.on('data', chunk=>{
 				bar.tick(chunk.length);
 			});
 		})
