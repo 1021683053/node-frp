@@ -8,8 +8,8 @@ import util from './util.js';
 
 // 系统对应资源map
 let source = {
-	// 'win32_x86'		: 	'windows_386.zip',
-	// 'win32_x64'		: 	'windows_amd64.zip',
+	'win32_x86'		: 	'windows_386.zip',
+	'win32_x64'		: 	'windows_amd64.zip',
 	'darwin_386'	: 	'darwin_386.tar.gz',
 	'darwin_x64'	: 	'darwin_amd64.tar.gz',
 	'linux_386'		: 	'linux_386.tar.gz',
@@ -51,6 +51,9 @@ class downloader{
 		}
 		if( response ){
 			this.setting( response );
+			if( this.frpdir(`v${this.version}`) ){
+				return this.frp = this.frpdir(tag);
+			};
 			let dist = `${root_dir}/frp/`;
 			let src = `${root_dir}/cache/${this.name}`;
 			await this.downloader( this.download, this.name);
