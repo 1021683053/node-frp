@@ -8,8 +8,8 @@ import util from './util.js';
 
 // 系统对应资源map
 let source = {
-	'win32_x86'		: 	'windows_386.zip',
-	'win32_x64'		: 	'windows_amd64.zip',
+	// 'win32_x86'		: 	'windows_386.zip',
+	// 'win32_x64'		: 	'windows_amd64.zip',
 	'darwin_386'	: 	'darwin_386.tar.gz',
 	'darwin_x64'	: 	'darwin_amd64.tar.gz',
 	'linux_386'		: 	'linux_386.tar.gz',
@@ -34,8 +34,7 @@ class downloader{
 		this.version = '';
 		this.name = '';
 		this.download = '';
-		this.frpc = '';
-		this.frps = '';
+		this.frp = '';
 	}
 
 	/**
@@ -47,14 +46,17 @@ class downloader{
 		let response;
 		if( !tag ){
 			response = await this.response('https://api.github.com/repos/fatedier/frp/releases/latest');
-		}else{
+		}else if( tag && !this.frpdir(tag) ){
 			response = await this.response(`https://api.github.com/repos/fatedier/frp/releases/tags/${tag}`)
 		}
-		this.setting( response );
-		await this.downloader( this.download, this.name);
-		let dist = `${root_dir}/frp/`;
-		let src = `${root_dir}/cache/${this.name}`;
-		await this.targz(src, dist);
+		if( response ){
+			this.setting( response );
+			let dist = `${root_dir}/frp/`;
+			let src = `${root_dir}/cache/${this.name}`;
+			await this.downloader( this.download, this.name);
+			await this.targz(src, dist);
+		}
+		return this.frp = this.frpdir(tag);
 	}
 
 	/**
@@ -114,7 +116,7 @@ class downloader{
 	 */
 	downloader(download, name){
 		let defer = util.defer();
-		let dir = path.resolve(__dirname, '../../cache/');
+		let dir = `${root_dir}/cache`;
 		let fname = `${dir}/${name}`;
 		if( !util.isDir(dir) ){
 			util.mkdir(dir);
@@ -126,7 +128,7 @@ class downloader{
 			let bar = new Progress('downloading [:bar] :percent :etas', {
 				complete: '=',
 				incomplete: ' ',
-				width: 40,
+				// width: 40,
 				total: len
 			});
 			res.on('data', chunk=>{
@@ -157,7 +159,25 @@ class downloader{
 				defer.resolve(true);
 			}
 		});
+		return defer.promise;
+	}
+
+	/**
+	 * @param  {获取当前版本发热盘存放目录}
+	 * @return {目录地址 OR False}
+	 */
+	frpdir(tag){
+		let version = tag.slice(1);
+		let source_name = source[platform];
+		let name = `frp_${version}_${source_name}`;
+		let dir = `${root_dir}/frp/${name.split('.tar.gz')[0]}`;
+		if( util.isDir(dir) ){
+			this.name = name;
+			this.version = version;
+			return dir;
+		}
+		return false;
 	}
 }
 
-module.exports = downloader;
+module.exports = new downloader();

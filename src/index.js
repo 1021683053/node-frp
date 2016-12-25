@@ -1,9 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 import util from './util/util.js';
-import Downloader from './util/downloader.js';
+import downloader from './util/downloader.js';
 
-let downloader = new Downloader();
+// let downloader = new Downloader();
 // import request from 'request';
 
 // let isFileAsync = p => {
@@ -24,7 +24,9 @@ let downloader = new Downloader();
 
 (async()=>{
 	try{
-		await downloader.use('v0.9.0');
+		let frp = await downloader.use('v0.8.0');
+		console.log(frp);
+		console.log(downloader.version, downloader.name, downloader.frp );
 		// let download = "http://mirrors.163.com/ubuntu/ls-lR.gz";
 		// await downloader.downloader(download, 'ls-lR.gz');
 	}catch(err){
