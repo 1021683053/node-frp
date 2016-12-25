@@ -131,7 +131,8 @@ class downloader{
 		request(options, (error, response, body)=>{
 			let status = response.statusCode;
 			if( error || !body || status == '404' ){
-				defer.reject(err || body);
+				console.log('Not find this version');
+				defer.reject(error || body);
 				return;
 			}
 			defer.resolve( JSON.parse( body) );
