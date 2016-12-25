@@ -31,10 +31,10 @@ class downloader{
 
 	constructor(){
 		this.platform = platform;
-		this.version = '';
-		this.name = '';
-		this.download = '';
-		this.frp = '';
+		this.version;
+		this.name;
+		this.download;
+		this.frp;
 	}
 
 	/**
@@ -44,22 +44,55 @@ class downloader{
 	async use(...args){
 		let [tag] = args;
 		let response;
-		if( !tag ){
+		let isTag = /^[v|V](\d+\.){2}\d+$/.test(tag);
+
+		let [frp, download, name, version] = [];
+
+		// 对此判断 tag 是否存在frp版本
+		[frp, name, version ] = this.frpdir(tag);
+
+		if( frp ){
+			this.name = name;
+			this.version = version;
+			this.download = '';
+			return this.frp = frp;
+		}
+
+		// 获取当前是否存在frp
+		if( isTag ){
+			response = await this.response(`https://api.github.com/repos/fatedier/frp/releases/tags/${tag}`);
+		}else if(tag && tag == 'latest'){
 			response = await this.response('https://api.github.com/repos/fatedier/frp/releases/latest');
-		}else if( tag && !this.frpdir(tag) ){
-			response = await this.response(`https://api.github.com/repos/fatedier/frp/releases/tags/${tag}`)
 		}
+
+		let setting = this.setting(response);
+		version = setting.version;
+		name = setting.name;
+		download = setting.download;
+
+		// 直接获取到tag直接切换过来
+		tag = `v${version}`;
+
+		// 全局赋值
+		this.name = name;
+		this.version = version;
+		this.download = download;
+
+		// 判断是否存在frp
+		[frp] = this.frpdir( tag );
+		if( frp ){
+			return this.frp = frp;
+		}
+
 		if( response ){
-			this.setting( response );
-			if( this.frpdir(`v${this.version}`) ){
-				return this.frp = this.frpdir(tag);
-			};
 			let dist = `${root_dir}/frp/`;
-			let src = `${root_dir}/cache/${this.name}`;
-			await this.downloader( this.download, this.name);
+			let src = `${root_dir}/cache/${name}`;
+			await this.downloader( download, name);
 			await this.targz(src, dist);
+			[frp] = this.frpdir(tag);
+			return this.frp = frp;
 		}
-		return this.frp = this.frpdir(tag);
+		return false;
 	}
 
 	/**
@@ -80,11 +113,6 @@ class downloader{
 				break;
 			}
 		}
-
-		// 环境赋值
-		this.name = name;
-		this.version = version;
-		this.download = download;
 		return {version, name, download};
 	}
 
@@ -175,9 +203,7 @@ class downloader{
 		let name = `frp_${version}_${source_name}`;
 		let dir = `${root_dir}/frp/${name.split('.tar.gz')[0]}`;
 		if( util.isDir(dir) ){
-			this.name = name;
-			this.version = version;
-			return dir;
+			return [dir, name, version];
 		}
 		return false;
 	}

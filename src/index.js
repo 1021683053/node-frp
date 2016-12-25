@@ -9,18 +9,15 @@ let run = async (...args)=>{
 	let [tag, cb] = args;
 	if(util.isFunction(tag)){
 		cb = tag;
-		tag = null;
-	}
-	if( tag == 'latest' ){
-		tag == null;
+		tag = 'latest';
 	}
 
 	try{
 		// 调用下载返回 当前使用frp目录
 		let frp = await downloader.use(tag);
-		cb && cb(downloader);
+		cb && cb(null, downloader);
 	}catch(err){
-		cb && cb(err);
+		cb && cb(err, null);
 	}
 };
 
