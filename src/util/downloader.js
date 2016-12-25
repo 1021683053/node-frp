@@ -2,7 +2,8 @@ import os from 'os';
 import fs from 'fs';
 import path from 'path';
 import request from 'request';
-import Progress from 'Progress';
+import Progress from 'progress';
+import targz from 'targz';
 import util from './util.js';
 
 // 系统对应资源map
@@ -19,6 +20,12 @@ let source = {
 // 获取系统类型&系统架构
 let platform = `${os.platform()}_${os.arch()}`;
 
+// lib目录
+let lib_dir = path.normalize(`${__dirname}/..`);
+
+// 项目根目录
+let root_dir = path.normalize(`${__dirname}/../..`);
+
 // 下载类
 class downloader{
 
@@ -27,6 +34,8 @@ class downloader{
 		this.version = '';
 		this.name = '';
 		this.download = '';
+		this.frpc = '';
+		this.frps = '';
 	}
 
 	/**
@@ -43,6 +52,9 @@ class downloader{
 		}
 		this.setting( response );
 		await this.downloader( this.download, this.name);
+		let dist = `${root_dir}/frp/`;
+		let src = `${root_dir}/cache/${this.name}`;
+		await this.targz(src, dist);
 	}
 
 	/**
@@ -100,7 +112,7 @@ class downloader{
 	 * @param  {文件名称}
 	 * @return {Promise}
 	 */
-	async downloader(download, name){
+	downloader(download, name){
 		let defer = util.defer();
 		let dir = path.resolve(__dirname, '../../cache/');
 		let fname = `${dir}/${name}`;
@@ -120,9 +132,31 @@ class downloader{
 			res.on('data', chunk=>{
 				bar.tick(chunk.length);
 			});
+			res.on('end', function () {
+				defer.resolve(true);
+			});
 		})
 		.pipe(fs.createWriteStream(fname));
 		return defer.promise;
+	}
+
+	/**
+	 * @param  {原路径}
+	 * @param  {解压路径}
+	 * @return {Promise}
+	 */
+	targz(src, dist){
+		let defer = util.defer();
+		targz.decompress({
+			src: src,
+			dest: dist
+		}, function(err){
+			if(err) {
+				defer.reject(err);
+			} else {
+				defer.resolve(true);
+			}
+		});
 	}
 }
 

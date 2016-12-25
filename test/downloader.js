@@ -1,3 +1,4 @@
+var path = require('path');
 var Downloader = require('../lib/util/downloader.js');
 var downloader = new Downloader();
 
