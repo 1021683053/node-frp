@@ -13,7 +13,6 @@ let source = {
 	'darwin_386'	: 	'darwin_386.tar.gz',
 	'darwin_x64'	: 	'darwin_amd64.tar.gz',
 	'linux_386'		: 	'linux_386.tar.gz',
-	'linux_amd64'	: 	'linux_amd64.tar.gz',
 	'linux_amd64'	: 	'linux_amd64.tar.gz'
 };
 

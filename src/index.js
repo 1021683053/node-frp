@@ -3,8 +3,9 @@ import path from 'path';
 import util from './util/util.js';
 import downloader from './util/downloader.js';
 
-let run = async (...args)=>{
-
+// 使用版本
+let use = async (...args)=>{
+	
 	// 重置传参
 	let [tag, cb] = args;
 	if(util.isFunction(tag)){
@@ -21,6 +22,10 @@ let run = async (...args)=>{
 	}
 };
 
+// 
+
+
+
 module.exports = {
-	run
+	use
 };
