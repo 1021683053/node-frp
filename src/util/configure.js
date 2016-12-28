@@ -14,22 +14,31 @@ class configure{
 
 	}
 
-	// JSON 转.ini文件
+	/**
+	 * JSON 转.ini context
+	 * @param  {Object} json JSON Object
+	 * @return {String}      .ini context
+	 */
 	toini( json ){
 		let context = "";
-		_.forEach( json, function(value, key) {
+		_.forEach( json, (value, key)=>{
 			context += '['+ key +']' + fold;
-			_.forEach( value, function(v, key){
+			_.forEach( value, (v, key)=>{
 				context += key +' = '+ v + fold;
 			});
 		});
 		return context;
 	}
 
-	// 写入文件 .ini
+	/**
+	 * 写入配置文件 .ini
+	 * @param  {String} context 由json转化过来的 .ini string
+	 * @param  {String} ininame 写入配置文件的文件名
+	 * @return {Promise}        Promise
+	 */
 	writeini(context, ininame){
 		let defer = util.defer();
-		fs.writeFile( ininame, context, {encoding: 'utf8'}, function(err){
+		fs.writeFile( ininame, context, {encoding: 'utf8'}, (err)=>{
 			if(!err){
 				return defer.resolve(true)
 			}
