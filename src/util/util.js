@@ -99,6 +99,39 @@ let isFile = p => {
 	return false;
 };
 
+// 判断是真空
+let isTrueEmpty = obj => {
+	if(obj === undefined || obj === null || obj === ''){
+		return true;
+	}
+	if(isNumber(obj) && isNaN(obj)){
+		return true;
+	}
+	return false;
+};
+
+// 判断无数据空
+let isEmpty = obj => {
+	if(isTrueEmpty(obj)){
+		return true;
+	}
+	if (isObject(obj)) {
+		for(let key in obj){
+		  return false && key; // only for eslint
+		}
+		return true;
+	}else if (isArray(obj)) {
+		return obj.length === 0;
+	}else if (isString(obj)) {
+		return obj.length === 0;
+	}else if (isNumber(obj)) {
+		return obj === 0;
+	}else if (isBoolean(obj)) {
+		return !obj;
+	}
+	return false;
+};
+
 export default {
 	promisify,
 	defer,
@@ -115,5 +148,7 @@ export default {
 	isDir,
 	isFile,
 	chmod,
-	mkdir
+	mkdir,
+	isTrueEmpty,
+	isEmpty
 };
