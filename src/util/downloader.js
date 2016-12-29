@@ -156,7 +156,7 @@ class downloader{
 		request( download )
 		.on('response', res=>{
 			let len = parseInt(res.headers['content-length'], 10);
-			let bar = new Progress('downloading [:bar] :percent :etas', {
+			let bar = new Progress(`Downloader ${this.version} [:bar] :percent :etas`, {
 				complete: '=',
 				incomplete: ' ',
 				// width: 40,

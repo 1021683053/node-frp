@@ -3,40 +3,45 @@ import path from 'path';
 import util from './util/util.js';
 import downloader from './util/downloader.js';
 import configure from './util/configure.js';
+class frp{
 
-// 使用版本
-let use = async (...args)=>{
-
-	// 重置传参
-	let [tag, cb] = args;
-	if(util.isFunction(tag)){
-		cb = tag;
-		tag = 'latest';
+	constructor(tag){
+		this.downloader;
+		this.configure;
+		this.tag = tag || 'latest';
 	}
 
-	try{
-		await downloader.use(tag);
-		cb && cb(null, downloader);
-	}catch(err){
-		cb && cb(err, null);
+	async getver(){
+		this.downloader = downloader;
+		await this.downloader.use(this.tag);
 	}
-	return downloader;
-};
 
-// 运行frpc
-let frpc = async (options)=>{
-	let frp = `${downloader.frp}/frpc`;
-	configure.frpc( frp, options);
-};
+	async frpc (options, output){
+		try{
+			await this.getver();
+			let frp = `${this.downloader.frp}/frpc`;
+			let child = await configure.frpc( frp, options);
+			child.stdout.on('data', output);
+		}catch(e){}
+	}
 
-// 运行frps
-let frps = async (options)=>{
-	let frp = `${downloader.frp}/frps`;
-	configure.frps(frp, options);
-};
+	async frps (options, output){
+		try{
+			await this.getver();
+			let frp = `${this.downloader.frp}/frps`;
+			let child = await configure.frps(frp, options);
+			child.stdout.on('data', output);
+		}catch(e){}
+	}
 
-module.exports = {
-	use,
-	frpc,
-	frps
-};
+	version (tag){
+		if( !tag ){
+			return this.tag;
+		}
+		this.tag = tag || 'latest';
+		return this;
+	}
+
+}
+
+module.exports = frp;

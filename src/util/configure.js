@@ -82,11 +82,10 @@ class configure{
 		let cmd;
 		if( await this.writeini( context, ininame ) ){
 			cmd = `${frp} -c ${ininame}`;
-			let child = sh.exec(cmd);
-			child.stdout.on('data', (data)=>{
-				console.log(data);
-			});
+			let child = sh.exec(cmd, {async:true});
+			return child;
 		}
+		return false;
 	}
 
 }

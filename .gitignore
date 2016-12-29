@@ -1,4 +1,5 @@
-lib
+lib/
 node_modules/
 cache/
-frp
+frp/
+.idea/

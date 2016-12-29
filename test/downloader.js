@@ -1,21 +1,23 @@
 var path = require('path');
-var frp = require('../lib/index.js');
-frp.use(function(err, downloader){
-	console.log(' 下载完毕.....\n','完成安装'+downloader.version+'\n','目录'+downloader.frp+'\n')
-}).then(function(downloader){
-	console.log(downloader)
-	var options = {
-		"common":{
-			"server_addr": "103.29.69.232",
-			"server_port": 7000,
-			"privilege_token": "3.1415926"
-		},
-		"web":{
-			"type": "http",
-			"custom_domains": "local.liweifeng.org",
-			"local_port": 8080,
-			"privilege_mode": true
-		}
-	};
-	frp.frpc(options);
+var FRP = require('../lib/index.js');
+
+var options = {
+	"common":{
+		"server_addr": "103.29.69.232",
+		"server_port": 7000,
+		"privilege_token": "3.1415926"
+	},
+	"web":{
+		"type": "http",
+		"custom_domains": "local.liweifeng.org",
+		"local_port": 8080,
+		"privilege_mode": true
+	}
+};
+
+var frp = new FRP('v0.8.0');
+frp.frpc(options, function(data){
+	if( /control\.go:207/.test(data) ){
+		console.log("frp 启动完成！");
+	}
 });
