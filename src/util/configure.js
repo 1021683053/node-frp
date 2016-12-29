@@ -14,7 +14,6 @@ class configure{
 
 	// 初始化静态方法
 	constructor(){
-
 	}
 
 	/**
@@ -50,18 +49,35 @@ class configure{
 		return defer.promise;
 	}
 
-	// frpc
-	frpc(frp, options){
-		console.log(options)
-		return this.run( frp, options, `${dirini}/frpc.ini`);
+	/**
+	 * 运行frp 客户端
+	 * @param  {String} frp     frpc地址
+	 * @param  {Object} options 配置
+	 * @return {Promise}        configure Promise
+	 */
+	async frpc(frp, options){
+		return await this.configure( frp, options, `${dirini}/frps.ini`);
 	}
 
-	// frps
-	frps(frp, options){
-		return this.run( frp, options, `${dirini}/frps.ini`);
+	/**
+	 * 运行frp 服务端
+	 * @param  {String} frp     frpc地址
+	 * @param  {Object} options 配置
+	 * @return {Promise}        configure Promise
+	 */
+	async frps(frp, options){
+		return await this.configure( frp, options, `${dirini}/frps.ini`);
 	}
 
-	async run(frp, options, ininame){
+
+	/**
+	 * 运行 Go 语言 frp
+	 * @param  {String} frp     frp可执行文件地址
+	 * @param  {Object} options frp运行配置
+	 * @param  {String} ininame 运行配置文件名称
+	 * @return {Boolean}        是否运行成功
+	 */
+	async configure(frp, options, ininame){
 		let context = this.toini( options );
 		let cmd;
 		if( await this.writeini( context, ininame ) ){
@@ -70,9 +86,7 @@ class configure{
 			child.stdout.on('data', (data)=>{
 				console.log(data);
 			});
-			return true;
 		}
-		return false;
 	}
 
 }

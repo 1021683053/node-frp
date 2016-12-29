@@ -7,7 +7,4 @@ commander
 	.option('-u, --use <version>', 'Use frp version', frp.run)
 	.option('-c, --clinet <config>', 'Use frp clinet')
 	.option('-s, --server <config>', 'Use frp server')
-	// .option('-P, --pineapple', 'Add pineapple')
-	// .option('-b, --bbq-sauce', 'Add bbq sauce')
-	// .option('-c, --cheese [type]', 'Add the specified type of cheese [marble]', 'marble')
 	.parse(process.argv);

@@ -15,12 +15,12 @@ let use = async (...args)=>{
 	}
 
 	try{
-		// 调用下载返回 当前使用frp目录
-		let frp = await downloader.use(tag);
+		await downloader.use(tag);
 		cb && cb(null, downloader);
 	}catch(err){
 		cb && cb(err, null);
 	}
+	return downloader;
 };
 
 // 运行frpc
