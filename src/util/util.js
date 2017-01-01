@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 
 // 类型判断
 let isArray = Array.isArray;
@@ -57,32 +58,6 @@ let defer = () => {
 	return deferred;
 };
 
-// 修改目录权限
-let chmod = (p, mode) => {
-	mode = mode || '0777';
-		if (!fs.existsSync(p)) {
-		return true;
-	}
-	return fs.chmodSync(p, mode);
-};
-
-// 创建目录
-let mkdir = (p, mode) => {
-	mode = mode || '0777';
-	if (fs.existsSync(p)) {
-		chmod(p, mode);
-		return true;
-	}
-	let pp = path.dirname(p);
-	if (fs.existsSync(pp)) {
-		fs.mkdirSync(p, mode);
-	}else{
-		mkdir(pp, mode);
-		mkdir(p, mode);
-	}
-	return true;
-};
-
 // 判断是否是目录
 let isDir = p => {
 	try{
@@ -132,6 +107,39 @@ let isEmpty = obj => {
 	return false;
 };
 
+// 修改目录权限
+let chmod = (p, mode) => {
+	mode = mode || '0777';
+		if (!fs.existsSync(p)) {
+		return true;
+	}
+	return fs.chmodSync(p, mode);
+};
+
+// 创建目录
+let mkdir = (p, mode) => {
+	mode = mode || '0777';
+	if (fs.existsSync(p)) {
+		chmod(p, mode);
+		return true;
+	}
+	let pp = path.dirname(p);
+	if (fs.existsSync(pp)) {
+		fs.mkdirSync(p, mode);
+	}else{
+		mkdir(pp, mode);
+		mkdir(p, mode);
+	}
+	return true;
+};
+
+// 生成 MD5字符串
+let md5 = str => {
+	let instance = crypto.createHash('md5');
+	instance.update(str + '', 'utf8');
+	return instance.digest('hex');
+};
+
 export default {
 	promisify,
 	defer,
@@ -147,8 +155,8 @@ export default {
 	isPromise,
 	isDir,
 	isFile,
-	chmod,
-	mkdir,
 	isTrueEmpty,
-	isEmpty
+	isEmpty,
+	chmod,
+	mkdir
 };
