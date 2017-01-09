@@ -1,93 +1,71 @@
 import os from 'os';
 import fs from 'fs';
 import path from 'path';
-import _ from 'lodash';
-import writejson from 'writejson';
-import sh from 'shelljs';
+// import _ from 'lodash';
+// import writejson from 'writejson';
+// import sh from 'shelljs';
 import util from './util.js';
 
 // 换行符
-let fold = /win/.test( os.platform() ) ? '\r\n' : '\n' ;
-let dirini = path.resolve(__dirname,'../../ini');
+const EOL = os.EOL;
 
-class configure{
+// 用户根目录
+const HOME = os.homedir();
 
-	// 初始化静态方法
-	constructor(){
+// 配置存放目录
+const DIR = path.resolve(HOME, './.frp/');
+
+// 配置文件存放目录
+const CONFIG = path.resolve(DIR, './configure.json');
+
+let configure = {};
+
+// 创建根目录
+let cdir =(DIR)=>{
+	if( !util.isDir(DIR) ){
+		return util.mkdir(DIR);
 	}
+	return true;
+};
 
-	/**
-	 * JSON 转.ini context
-	 * @param  {Object} json JSON Object
-	 * @return {String}      .ini context
-	 */
-	toini( json ){
-		let context = "";
-		_.forEach( json, (value, key)=>{
-			context += '['+ key +']' + fold;
-			_.forEach( value, (v, key)=>{
-				context += key +' = '+ v + fold;
-			});
-		});
-		return context;
-	}
+// 写入配置文件
+let set = (key, val)=>{
 
-	/**
-	 * 写入配置文件 .ini
-	 * @param  {String} context 由json转化过来的 .ini string
-	 * @param  {String} ininame 写入配置文件的文件名
-	 * @return {Promise}        Promise
-	 */
-	writeini(context, ininame){
-		let defer = util.defer();
-		fs.writeFile( ininame, context, {encoding: 'utf8'}, (err)=>{
-			if(!err){
-				return defer.resolve(true)
-			}
-			defer.reject(err);
-		});
-		return defer.promise;
-	}
+	// 判断该是否需要创建配置文件
+	if( !util.isFile(CONFIG) ){
+		fs.writeFileSync(CONFIG, '{}', {encoding: 'utf8'});
+	};
 
-	/**
-	 * 运行frp 客户端
-	 * @param  {String} frp     frpc地址
-	 * @param  {Object} options 配置
-	 * @return {Promise}        configure Promise
-	 */
-	async frpc(frp, options){
-		return await this.configure( frp, options, `${dirini}/frps.ini`);
-	}
+	// 读取配置
+	let options = require(CONFIG);
+	options[key] = val;
+	return fs.writeFileSync(CONFIG, JSON.stringify(options), {encoding: 'utf8'});
+};
 
-	/**
-	 * 运行frp 服务端
-	 * @param  {String} frp     frpc地址
-	 * @param  {Object} options 配置
-	 * @return {Promise}        configure Promise
-	 */
-	async frps(frp, options){
-		return await this.configure( frp, options, `${dirini}/frps.ini`);
-	}
+// 获取单项配置
+let get = (key)=>{
+
+	// 判断该是否需要创建配置文件
+	if( !util.isFile(CONFIG) ){
+		fs.writeFileSync(CONFIG, '{}', {encoding: 'utf8'});
+	};
+
+	// 读取配置
+	let options = require(CONFIG);
+	return options[key];
+};
+
+// 切换版本
+let change = (tag)=>{
+	return set('tag', tag);
+};
+
+// 获取版本下载地址
+let gettag = ()=>{
+
+};
+
+// 版本解压
 
 
-	/**
-	 * 运行 Go 语言 frp
-	 * @param  {String} frp     frp可执行文件地址
-	 * @param  {Object} options frp运行配置
-	 * @param  {String} ininame 运行配置文件名称
-	 * @return {Boolean}        是否运行成功
-	 */
-	async configure(frp, options, ininame){
-		let context = this.toini( options );
-		let cmd;
-		if( await this.writeini( context, ininame ) ){
-			cmd = `${frp} -c ${ininame}`;
-			let child = sh.exec(cmd, {async:true});
-			return child;
-		}
-		return false;
-	}
-
-}
-
-module.exports = new configure();
+module.exports = configure;
