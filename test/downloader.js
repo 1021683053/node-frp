@@ -36,6 +36,4 @@ describe("Downloader下载测试!", function(){
 		});
 	});
 
-	
-
 });

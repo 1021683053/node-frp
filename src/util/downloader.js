@@ -5,19 +5,15 @@ import request from 'request';
 import Progress from 'progress';
 import util from './util.js';
 
-
-//匹配下载的version
-let version = (download_url)=>{
-
-};
-
 // 下载插件
 let downloader = function(download_url, download_dir){
 	let defer = util.defer();
 
+	// 匹配版本库下载地址是否正确
 	let matchs = download_url.match(/^(?:https?:\/\/\S+\/v(\d+(?:\.\d+){2})\/\S+\.(?:zip|tar\.gz))$/);
+	let version = matchs && matchs[1];
 
-	if( !matchs || !matchs[1] ){
+	if( !version ){
 
 		//  判断是否是正确的下载地址
 		defer.reject("This download_url is error!");
@@ -32,31 +28,36 @@ let downloader = function(download_url, download_dir){
 		// 获取文件名
 		let basename = path.basename(download_url);
 		let pathname = path.join(download_dir, basename);
-		let version = matchs[1];
 
 		// 请求数据
-		request( download_url )
-		.on('response', res=>{
-			let len = parseInt(res.headers['content-length'], 10);
-			let bar = new Progress(`Downloader ${version} [:bar] :percent :etas`, {
-				complete: '=',
-				incomplete: ' ',
-				total: len
-			});
-			res.on('data', chunk=>{
-				bar.tick(chunk.length);
-			});
-			res.on('end', function () {
-				defer.resolve(true);
-			});
-		})
-		.pipe(fs.createWriteStream(pathname));
+		let downloading = request( download_url );
+
+		downloading.on('error', function(err){
+			defer.reject(err);
+		});
+
+		downloading.on('response', res=>{
+			if( res.statusCode == 200 ){
+				let len = parseInt(res.headers['content-length'], 10);
+				let bar = new Progress(`Downloader ${version} [:bar] :percent :etas`, {
+					complete: '=',
+					incomplete: ' ',
+					total: len
+				});
+				res.on('data', chunk=>{
+					bar.tick(chunk.length);
+				});
+				res.on('end', function () {
+					defer.resolve(true);
+				});
+				res.pipe(fs.createWriteStream(pathname));
+			}else{
+				defer.reject(`Response code is ${res.statusCode}`);
+			}
+		});
 	}
 
 	return defer.promise;
 };
-
-
-
 
 module.exports = downloader;
