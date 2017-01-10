@@ -1,9 +1,7 @@
 import os from 'os';
 import fs from 'fs';
 import path from 'path';
-// import _ from 'lodash';
-// import writejson from 'writejson';
-// import sh from 'shelljs';
+import jfs from 'jsonfile';
 import util from './util.js';
 
 // 换行符
@@ -17,16 +15,6 @@ const ROOT = path.resolve(HOME, './.frp/');
 
 // 配置文件存放目录
 const CONFIG = path.resolve(ROOT, './configure.json');
-
-let configure = {};
-
-// 创建根目录
-let cdir =(DIR)=>{
-	if( !util.isDir(DIR) ){
-		return util.mkdir(DIR);
-	}
-	return true;
-};
 
 // 写入配置文件
 let set = (key, val)=>{
@@ -55,17 +43,12 @@ let get = (key)=>{
 	return options[key];
 };
 
-// 切换版本
-let change = (tag)=>{
-	return set('tag', tag);
-};
+class configure{
+	constructor(){
+		util.mkdir(ROOT);
+		this.DIR = ROOT;
+		this.HOME = HOME;
+	}
+}
 
-// 获取版本下载地址
-let gettag = ()=>{
-
-};
-
-// 版本解压
-
-
-module.exports = configure;
+module.exports = new configure();
