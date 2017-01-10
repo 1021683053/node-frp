@@ -13,10 +13,10 @@ const EOL = os.EOL;
 const HOME = os.homedir();
 
 // 配置存放目录
-const DIR = path.resolve(HOME, './.frp/');
+const ROOT = path.resolve(HOME, './.frp/');
 
 // 配置文件存放目录
-const CONFIG = path.resolve(DIR, './configure.json');
+const CONFIG = path.resolve(ROOT, './configure.json');
 
 let configure = {};
 

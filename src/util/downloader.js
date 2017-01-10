@@ -5,7 +5,7 @@ import request from 'request';
 import Progress from 'progress';
 import util from './util.js';
 
-// 下载插件
+// 下载组件
 let downloader = function(download_url, download_dir){
 	let defer = util.defer();
 
@@ -47,12 +47,14 @@ let downloader = function(download_url, download_dir){
 				res.on('data', chunk=>{
 					bar.tick(chunk.length);
 				});
+
+				res.pipe(fs.createWriteStream(pathname));
+
 				res.on('end', function () {
 					defer.resolve(true);
 				});
-				res.pipe(fs.createWriteStream(pathname));
 			}else{
-				defer.reject(`Response code is ${res.statusCode}`);
+				defer.reject(`Response error code is ${res.statusCode}`);
 			}
 		});
 	}
