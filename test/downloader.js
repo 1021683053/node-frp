@@ -26,14 +26,14 @@ describe("Downloader下载测试!", function(){
 		});
 	});
 
-	it("下载URL与DIR是否匹配", function(down){
-		downloader(download_url, download_dir)
-		.then(function(){
-			down();
-		})
-		.catch(function(err){
-			down(new Error(err));
-		});
-	});
+	// it("下载URL与DIR是否匹配", function(down){
+	// 	downloader(download_url, download_dir)
+	// 	.then(function(){
+	// 		down();
+	// 	})
+	// 	.catch(function(err){
+	// 		down(new Error(err));
+	// 	});
+	// });
 
 });
