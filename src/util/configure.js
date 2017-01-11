@@ -44,11 +44,45 @@ let get = (key)=>{
 };
 
 class configure{
+
+	// 初始化目录
 	constructor(){
+		this.version;
 		util.mkdir(ROOT);
-		this.DIR = ROOT;
-		this.HOME = HOME;
 	}
+
+	// getter version
+	get version(){
+		let version = get('version');
+		if( version ){
+			return version;
+		}
+		return null;
+	}
+
+	// setter version
+	set version(version){
+		if( set('version', version) ){
+			return version;
+		}
+		return null;
+	}
+
+	// 初始化 inis 目录
+	inis(){
+
+	}
+
+	// 初始化 cache 目录
+	chache(){
+
+	}
+
+	// 初始化 frp 各个版本 目录
+	vendor(){
+
+	}
+
 }
 
 module.exports = new configure();

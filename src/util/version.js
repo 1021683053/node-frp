@@ -13,8 +13,10 @@ let platforms = {
 	'linux_amd64'	: 	'linux_amd64.tar.gz'
 };
 
+let ost = (os.type()).toLowerCase();
+
 // 获取系统类型&系统架构
-let platform = `${os.platform()}_${os.arch()}`;
+let platform = `${ost}_${os.arch()}`;
 
 /**
  * @param  {Github版本数据接口}
@@ -52,7 +54,7 @@ let version = async (...args)=>{
 	}
 
 	// 获取文件后缀名称
-	let ext = os.platform() == 'win32' ? '.zip' : '.tar.gz';
+	let ext = ost == 'win32' ? '.zip' : '.tar.gz';
 
 	// 获取版本号
 	let version = response.tag_name.slice(1);
@@ -81,8 +83,4 @@ let version = async (...args)=>{
 
 	return { version, download, name, dir, ext };
 };
-
-
-
-
 module.exports = version;
