@@ -71,6 +71,7 @@ let version = async (...args)=>{
 			break;
 		}
 		if( i == response.assets.length-1 ){
+			console.log(ost)
 			throw new Error("Not find this system file.");
 		}
 	}
