@@ -4,85 +4,111 @@ import path from 'path';
 import jfs from 'jsonfile';
 import util from './util.js';
 
-// 换行符
-const EOL = os.EOL;
-
-// 用户根目录
-const HOME = os.homedir();
-
 // 配置存放目录
-const ROOT = path.resolve(HOME, './.frp/');
+const FRP_ROOT = path.resolve(os.homedir(), './.frp/');
 
 // 配置文件存放目录
-const CONFIG = path.resolve(ROOT, './configure.json');
+const FRP_CONFIG = path.resolve(FRP_ROOT, './configure.json');
 
 // 写入配置文件
-let set = (key, val)=>{
+let setconfig = (key, val)=>{
 
 	// 判断该是否需要创建配置文件
-	if( !util.isFile(CONFIG) ){
-		fs.writeFileSync(CONFIG, '{}', {encoding: 'utf8'});
+	if( !util.isFile( FRP_CONFIG ) ){
+		fs.writeFileSync( FRP_CONFIG, '{}', {encoding: 'utf8'});
 	};
 
 	// 读取配置
-	let options = require(CONFIG);
+	let options = require( FRP_CONFIG );
 	options[key] = val;
-	return fs.writeFileSync(CONFIG, JSON.stringify(options), {encoding: 'utf8'});
+	return fs.writeFileSync( FRP_CONFIG, JSON.stringify(options), {encoding: 'utf8'});
 };
 
 // 获取单项配置
-let get = (key)=>{
+let getconfig = (key)=>{
 
 	// 判断该是否需要创建配置文件
-	if( !util.isFile(CONFIG) ){
-		fs.writeFileSync(CONFIG, '{}', {encoding: 'utf8'});
+	if( !util.isFile( FRP_CONFIG ) ){
+		fs.writeFileSync( FRP_CONFIG, '{}', {encoding: 'utf8'});
 	};
 
 	// 读取配置
-	let options = require(CONFIG);
+	let options = require( FRP_CONFIG );
 	return options[key];
+};
+
+// 创建目录
+let mkdir = (dir)=>{
+	if( util.isDir(dir) ){
+		return dir;
+	}
+	if( util.mkdir(dir)){
+		return dir;
+	}
+	return false;
 };
 
 class configure{
 
 	// 初始化目录
-	constructor(){
+	constructor(root){
+		this.root = root;
+		if( !this.run() ){
+			this.root = null;
+			throw new Error(`Error ${this.root} not find OR 'Permission denied'`);
+		}
 		this.version;
-		util.mkdir(ROOT);
+		this.ini;
+		this.cache;
+		this.vendor;
+		this.log;
+	}
+
+	// 运行程序
+	run(){
+		if( util.isDir(this.root) ){
+			return true;
+		}
+		return util.mkdir(this.root);
 	}
 
 	// getter version
 	get version(){
-		let version = get('version');
+		let version = getconfig('version');
 		if( version ){
 			return version;
 		}
-		return null;
+		return false;
 	}
 
 	// setter version
 	set version(version){
-		if( set('version', version) ){
+		if( setconfig('version', version) ){
 			return version;
 		}
-		return null;
+		return false;
 	}
 
-	// 初始化 inis 目录
-	inis(){
-
+	// getter ini
+	get ini(){
+		return mkdir( path.resolve(this.root, './ini') );
 	}
 
-	// 初始化 cache 目录
-	chache(){
-
+	// getter cache
+	get cache(){
+		return mkdir( path.resolve(this.root, './cache') );
 	}
 
-	// 初始化 frp 各个版本 目录
-	vendor(){
+	// getter cache
+	get vendor(){
+		return mkdir( path.resolve(this.root, './vendor') );
+	}
 
+	// getter log
+	get log(){
+		return mkdir( path.resolve(this.root, './log') );
 	}
 
 }
 
-module.exports = new configure();
+module.exports = new configure(FRP_ROOT);
