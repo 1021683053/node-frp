@@ -140,6 +140,22 @@ let md5 = str => {
 	return instance.digest('hex');
 };
 
+// 判断是否可写
+let isWritable = p => {
+	if (!fs.existsSync(p)) {
+		return false;
+	}
+	let stats = fs.statSync(p);
+	let mode = stats.mode;
+	let uid = process.getuid ? process.getuid() : 0;
+	let gid = process.getgid ? process.getgid() : 0;
+	let owner = uid === stats.uid;
+	let group = gid === stats.gid;
+	return !!(owner && (mode & parseInt('00200', 8)) || 
+		group && (mode & parseInt('00020', 8)) || 
+		(mode & parseInt('00002', 8)));
+};
+
 export default {
 	promisify,
 	defer,
@@ -158,5 +174,6 @@ export default {
 	isTrueEmpty,
 	isEmpty,
 	chmod,
-	mkdir
+	mkdir,
+	isWritable
 };

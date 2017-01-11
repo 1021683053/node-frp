@@ -1,5 +1,9 @@
 # node-frp （Beta）
 
+
+[![Build Status](https://travis-ci.org/1021683053/node-frp.svg?branch=master)](https://travis-ci.org/1021683053/node-frp)
+
+
 Run [Go frp](https://github.com/fatedier/frp) in nodejs.
 
 

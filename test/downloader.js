@@ -1,23 +1,39 @@
+var downloader = require('../lib/util/downloader.js');
 var path = require('path');
-var FRP = require('../lib/index.js');
 
-var options = {
-	"common":{
-		"server_addr": "103.29.69.232",
-		"server_port": 7000,
-		"privilege_token": "3.1415926"
-	},
-	"web":{
-		"type": "http",
-		"custom_domains": "local.liweifeng.org",
-		"local_port": 8080,
-		"privilege_mode": true
-	}
-};
+describe("Downloader下载测试!", function(){
 
-var frp = new FRP('v0.8.0');
-frp.frpc(options, function(data){
-	if( /control\.go:207/.test(data) ){
-		console.log("frp 启动完成！");
-	}
+	var download_url = "https://github.com/fatedier/frp/releases/download/v0.9.2/frp_0.9.2_darwin_386.tar.gz";
+	var download_dir = __dirname;
+
+	it("下载URL错误容错", function(down){
+		downloader("///", download_dir)
+		.then(function(){
+			down("下载地址是正确的");
+		})
+		.catch(function(err){
+			down();
+		});
+	});
+
+	it("下载DIR错误OR不可写容错", function(down){
+		downloader(download_url, '/')
+		.then(function(){
+			down("下载DIR是正确的");
+		})
+		.catch(function(err){
+			down();
+		});
+	});
+
+	// it("下载URL与DIR是否匹配", function(down){
+	// 	downloader(download_url, download_dir)
+	// 	.then(function(){
+	// 		down();
+	// 	})
+	// 	.catch(function(err){
+	// 		down(new Error(err));
+	// 	});
+	// });
+
 });
