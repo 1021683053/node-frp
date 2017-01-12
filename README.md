@@ -1,10 +1,10 @@
 # node-frp （Beta）
 
 
-[![Linux Status](https://travis-ci.org/1021683053/node-frp.svg?branch=master)](https://travis-ci.org/1021683053/node-frp)
+[![Linux Build][travis-image]][travis-url]
 
 
-Run [frp](https://github.com/fatedier/frp) in nodejs.
+Runing [frp](https://github.com/fatedier/frp) in nodejs.
 
 
 ##开发计划
@@ -20,3 +20,6 @@ Run [frp](https://github.com/fatedier/frp) in nodejs.
 * 命令行工具
 
 当前还有很多BUG未解决！
+
+[travis-image]: https://travis-ci.org/1021683053/node-frp.svg?label=linux
+[travis-url]: https://travis-ci.org/1021683053/node-frp
