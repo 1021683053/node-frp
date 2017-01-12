@@ -9,7 +9,7 @@
     "watch": "npm run watch-compile",
     "prepublish": "npm run compile",
     "test": "mocha --reporter spec --timeout 1000000 --recursive test/",
-    "test-ci": "mocha --reporter spec --recursive 'test/*.js'"
+    "test-ci": "mocha --reporter spec --recursive \"test/!(http).js\""
   },
   "bin": {
     "frp": "./bin/index.js"
