@@ -4,8 +4,11 @@ import path from 'path';
 import jfs from 'jsonfile';
 import util from './util.js';
 
+// HOME存放位置
+const HOME_DIR = process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
+
 // 配置存放目录
-const FRP_ROOT = path.resolve(os.homedir(), './.frp/');
+const FRP_ROOT = path.resolve(HOME_DIR, './.frp/');
 
 // 配置文件存放目录
 const FRP_CONFIG = path.resolve(FRP_ROOT, './configure.json');
