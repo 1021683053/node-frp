@@ -1,7 +1,5 @@
-import os from 'os';
 import fs from 'fs';
 import path from 'path';
-import jfs from 'jsonfile';
 import util from './util.js';
 
 // HOME存放位置
