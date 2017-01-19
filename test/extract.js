@@ -26,16 +26,30 @@ describe("Extract 测试!", function(){
 	});
 
 	it('ZIP 解压', function(done){
-			var src = path.join(__dirname, './datas/frp-0.8.1.zip');
-			var dist = path.join(__dirname, './datas/');
-			extract(src, dist)
-			.then(function(res){
-				expect(res).to.be.ok;
-				done();
-			})
-			.catch(function(err){
-				done(err);
-			});
+		var src = path.join(__dirname, './datas/frp-0.9.3.zip');
+		var dist = path.join(__dirname, './datas/');
+		extract(src, dist)
+		.then(function(res){
+			expect(res).to.be.ok;
+			done();
+		})
+		.catch(function(err){
+			done(err);
+		});
 	});
+
+	it('tar.gz 解压', function(done){
+		var src = path.join(__dirname, './datas/frp-0.9.2.tar.gz');
+		var dist = path.join(__dirname, './datas/');
+		extract(src, dist)
+		.then(function(res){
+			expect(res).to.be.ok;
+			done();
+		})
+		.catch(function(err){
+			done(err);
+		});
+	});
+
 
 });

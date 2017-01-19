@@ -21,6 +21,20 @@ let extract_unzip = (src, dist)=>{
 	return defer.promise;
 };
 
+// 解压tar.gz
+let extract_targz = (src, dist)=>{
+	let defer = util.defer();
+	let targz = require('targz');
+	targz.decompress({src: src, dest: dist}, function(err){
+	    if(err) {
+			defer.reject(err);
+			return;
+	    }
+        defer.resolve(true);
+	});
+	return defer.promise;
+};
+
 // 解压组件
 let extract = async(src, dist)=>{
 
@@ -46,7 +60,7 @@ let extract = async(src, dist)=>{
 	}
 
 	if( ext == 'tar.gz' ){
-
+		complete = await extract_targz(src, dist);
 	}
 	if( complete ){
 		return complete;
