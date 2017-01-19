@@ -38,9 +38,10 @@ let downloader = function(download_url, download_dir){
 		downloading.on('response', res=>{
 			if( res.statusCode == 200 ){
 				let len = parseInt(res.headers['content-length'], 10);
-				let bar = new Progress(`Downloader ${version} [:bar] :percent :etas`, {
+				let bar = new Progress(`  downloader ${version} [:bar] :percent :etas`, {
 					complete: '=',
 					incomplete: ' ',
+					width: 1024,
 					total: len
 				});
 				res.on('data', chunk=>{
