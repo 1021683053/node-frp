@@ -1,0 +1,19 @@
+environment:
+  matrix:
+    - nodejs_version: "0.10"
+    - nodejs_version: "0.11"
+    - nodejs_version: "0.12"
+    - nodejs_version: "4.4"
+    - nodejs_version: "5.11"
+    - nodejs_version: "6"
+    - nodejs_version: "6.1"
+cache:
+  - node_modules
+install:
+  - npm install
+build: off
+test_script:
+  - node --version
+  - npm --version
+  - npm run test-ci
+version: "{build}"
