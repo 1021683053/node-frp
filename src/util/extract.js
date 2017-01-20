@@ -1,10 +1,6 @@
 import fs from 'fs';
-import os from 'os';
 import path from 'path';
 import util from './util.js';
-
-// 系统win32/linux
-let platform = os.platform() == 'win32' ? 'win32' : 'linux';
 
 // 解压ZIP
 let extract_unzip = (src, dist)=>{
